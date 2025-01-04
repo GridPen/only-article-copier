@@ -1,0 +1,57 @@
+:root {
+  --primary-color: #007bff;
+  --hover-color: #0056b3;
+  --light-bg: #f4f4f4;
+  --dark-bg: #333;
+  --light-text: #333;
+  --dark-text: #f4f4f4;
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  margin: 0;
+  padding: 20px;
+  width: 300px;
+  transition: background-color var(--transition-speed),
+    color var(--transition-speed);
+}
+
+body.dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.container {
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+button:hover {
+  background-color: var(--hover-color);
+}
+
+.status-message {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #adadad;
+  transition: color var(--transition-speed);
+}

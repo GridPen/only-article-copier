@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "Only Article Copier",
+    "version": "1.0",
+    "description": "A Chrome extension to copy articles from web pages in MD format.",
+    "permissions": ["activeTab"],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+      }
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "author": "Debashish Mondal",
+    "homepage_url": "https://x.com/gridpencil",
+    "icons": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+}
