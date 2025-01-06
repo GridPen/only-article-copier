@@ -28,11 +28,18 @@ document.addEventListener("DOMContentLoaded", () => {
         { action: "copyArticle" },
         (response) => {
           if (response && response.article) {
-            navigator.clipboard.writeText(response.article).then(() => {
-              document.getElementById(
-                "status"
-              ).innerText = `Article copied to clipboard! Word count: ${response.wordCount}`;
-            });
+            navigator.clipboard
+              .writeText(response.article)
+              .then(() => {
+                document.getElementById(
+                  "status"
+                ).innerText = `Article copied to clipboard! Word count: ${response.wordCount}`;
+              })
+              .catch((error) => {
+                console.error("Error copying article to clipboard:", error);
+                document.getElementById("status").innerText =
+                  "Error copying article to clipboard.";
+              });
           } else {
             document.getElementById("status").innerText = "No article found.";
           }
