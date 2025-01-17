@@ -14,25 +14,87 @@ const extractArticle = () => {
     "main", // Main content area
   ];
 
+  // Add these selectors to identify comment sections
+  const commentSelectors = [
+    "#comments",
+    ".comments",
+    ".comment-section",
+    ".responses",
+    '[data-testid="comments-section"]',
+    ".discussion",
+    ".commentlist",
+    ".comment-thread",
+    // Common comment section identifiers
+    '[id*="comment"]',
+    '[class*="comment"]',
+    '[id*="disqus"]',
+    ".discourse-comments",
+    // Social media style comments
+    ".fb-comments",
+    ".twitter-timeline",
+    // Comment form areas
+    "#respond",
+    ".comment-form",
+    ".comment-reply",
+  ];
+
   // Function to calculate content score
   const calculateContentScore = (element) => {
     if (!element) return 0;
+
+    // Check if the element or its ancestors match comment selectors
+    const isCommentSection = (el) => {
+      if (!el) return false;
+
+      // Check if element matches any comment selector
+      if (
+        commentSelectors.some((selector) => el.matches && el.matches(selector))
+      ) {
+        return true;
+      }
+
+      // Check parent until body
+      return el.parentElement && el !== document.body
+        ? isCommentSection(el.parentElement)
+        : false;
+    };
+
+    // Return negative score for comment sections
+    if (isCommentSection(element)) {
+      return -100;
+    }
 
     let score = 0;
     const text = element.innerText;
     const wordCount = text.split(/\s+/).filter(Boolean).length;
 
-    // Add score based on word count
-    score += Math.min(wordCount / 50, 10);
+    // Enhanced scoring system
+    score += Math.min(wordCount / 50, 10); // Base word count score
+
+    // Bonus for article indicators
+    const hasArticleStructure = element.querySelector("h1, h2, h3, p");
+    if (hasArticleStructure) score += 5;
+
+    // Bonus for article metadata
+    const hasMetadata = element.querySelector(
+      '[class*="date"], [class*="author"], [class*="meta"]'
+    );
+    if (hasMetadata) score += 3;
 
     // Check for common article-related tags
     const importantTags = element.querySelectorAll("h1, h2, p, blockquote");
     score += importantTags.length;
 
-    // Penalize elements with too many links or short text
+    // Penalize for common non-article indicators
     const links = element.querySelectorAll("a");
     score -= links.length > 20 ? 5 : 0;
     score -= wordCount < 50 ? 5 : 0;
+
+    // Penalize for social sharing buttons
+    const hasSocialButtons = element.querySelector(
+      '[class*="share"], [class*="social"]'
+    );
+    if (hasSocialButtons) score -= 3;
 
     return score;
   };
@@ -110,7 +172,44 @@ const extractArticle = () => {
     }
   };
 
+  // Add this function to clean the extracted content
+  const cleanContent = (element) => {
+    if (!element) return null;
+
+    // Create a clone to avoid modifying the original DOM
+    const clone = element.cloneNode(true);
+
+    // Remove comment sections
+    commentSelectors.forEach((selector) => {
+      const comments = clone.querySelectorAll(selector);
+      comments.forEach((comment) => comment.remove());
+    });
+
+    // Remove other unnecessary elements
+    const removeSelectors = [
+      '[class*="share"]',
+      '[class*="social"]',
+      '[class*="related"]',
+      '[class*="sidebar"]',
+      '[class*="advertisement"]',
+      "iframe",
+      "script",
+      "style",
+      ".ad",
+      ".popup",
+      ".newsletter",
+    ];
+
+    removeSelectors.forEach((selector) => {
+      const elements = clone.querySelectorAll(selector);
+      elements.forEach((el) => el.remove());
+    });
+
+    return clone;
+  };
+
   if (bestArticle) {
+    bestArticle = cleanContent(bestArticle);
     processContent(bestArticle);
   }
 
